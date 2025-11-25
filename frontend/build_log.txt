@@ -1,0 +1,12 @@
+
+> frontend@0.1.0 build
+> react-scripts build
+
+(node:34960) [DEP0176] DeprecationWarning: fs.F_OK is deprecated, use fs.constants.F_OK instead
+(Use `node --trace-deprecation ...` to show where the warning was created)
+Creating an optimized production build...
+Failed to compile.
+
+Module not found: Error: Can't resolve 'axios' in 'C:\Users\LENOVO\Downloads\DBMS-M\frontend\src'
+
+
