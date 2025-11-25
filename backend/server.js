@@ -1,17 +1,22 @@
 // backend/server.js
+require('dotenv').config();
 const express = require("express");
 const cors = require("cors");
 const db = require("./config/db");
+const authenticateToken = require('./middleware/auth');
+const authRoutes = require('./routes/auth');
+const dashboardRoutes = require('./routes/dashboard');
 
 const app = express();
-const PORT = 5000;
+const PORT = process.env.PORT || 5000;
 
 // FIXED CORS
 app.use(
     cors({
-        origin: ["http://localhost:3000", "http://127.0.0.1:3000"],
+        origin: true, // Allow all origins
         methods: ["GET", "POST", "PUT", "DELETE"],
-        allowedHeaders: ["Content-Type"],
+        allowedHeaders: ["Content-Type", "Authorization"],
+        credentials: true
     })
 );
 
@@ -26,8 +31,26 @@ app.use((req, res, next) => {
 
 // ------------------ ROUTES ------------------
 
-// Get all employees
-app.get('/api/employees', (req, res) => {
+// Authentication routes (public)
+app.use('/api/auth', authRoutes);
+
+// Dashboard routes (protected)
+app.use('/api/dashboard', dashboardRoutes);
+
+// DB Connection Check (public for testing)
+app.get('/api/db-check', (req, res) => {
+    db.query('SELECT 1', (err, results) => {
+        if (err) {
+            console.error('DB Check Failed:', err);
+            res.status(500).json({ status: 'error', message: 'Database connection failed', error: err.message });
+        } else {
+            res.json({ status: 'ok', message: 'Database connected successfully' });
+        }
+    });
+});
+
+// Get all employees (PROTECTED)
+app.get('/api/employees', authenticateToken, (req, res) => {
     const sql = `
         SELECT e.emp_id, e.emp_name, e.email, e.phone, e.gender, e.dob,
                d.dept_name, e.hire_date, e.dept_id
@@ -44,8 +67,8 @@ app.get('/api/employees', (req, res) => {
     });
 });
 
-// Add new employee
-app.post('/api/employees', (req, res) => {
+// Add new employee (PROTECTED)
+app.post('/api/employees', authenticateToken, (req, res) => {
     let { emp_name, email, phone, gender, dob, dept_id, hire_date } = req.body;
 
     // Basic validation
@@ -73,8 +96,8 @@ app.post('/api/employees', (req, res) => {
     });
 });
 
-// Update employee
-app.put('/api/employees/:id', (req, res) => {
+// Update employee (PROTECTED)
+app.put('/api/employees/:id', authenticateToken, (req, res) => {
     const emp_id = req.params.id;
     const { emp_name, email, phone, gender, dob, dept_id, hire_date } = req.body;
 
@@ -92,8 +115,8 @@ app.put('/api/employees/:id', (req, res) => {
     });
 });
 
-// Delete employee
-app.delete('/api/employees/:id', (req, res) => {
+// Delete employee (PROTECTED)
+app.delete('/api/employees/:id', authenticateToken, (req, res) => {
     const emp_id = req.params.id;
     const sql = `DELETE FROM employees WHERE emp_id = ?`;
     db.query(sql, [emp_id], (err, result) => {
@@ -114,5 +137,5 @@ app.listen(PORT, () => {
 // Global error handler (should be after routes)
 app.use((err, req, res, next) => {
     console.error('Unhandled error:', err);
-    res.status(500).json({ error: 'Internal server error' });
+    res.status(500).json({ error: 'Internal server error: ' + err.message });
 });

@@ -1,3 +1,33 @@
-node_modules
-backend/node_modules
+# Dependencies
+node_modules/
+package-lock.json
+
+# Environment variables
 .env
+*.env
+
+# Build files
+build/
+dist/
+*.log
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Debug files
+debug_*.js
+debug_output.txt
+login_attempts.log
+response.json
+test_login_script.js
+
+# Temporary files
+*.tmp
+*.temp
