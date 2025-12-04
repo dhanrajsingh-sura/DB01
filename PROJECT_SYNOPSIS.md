@@ -205,116 +205,41 @@ The following features are not included in the current version but may be consid
 ## 6. Database Design
 
 ### 6.1 Database Architecture
+The system utilizes a relational database model (MySQL) named `employee_db`. It is designed with Third Normal Form (3NF) principles to ensure data integrity and minimize redundancy. The architecture consists of three core entities with well-defined relationships.
 
-The Employee Management System uses a relational database model implemented in MySQL. The database `employee_db` consists of three main tables with well-defined relationships ensuring data integrity and efficient querying.
+### 6.2 Table Structures
 
-### 6.2 Entity Relationship Model
+**1. Departments Table (`departments`)**
+Stores organizational department details.
+*   **dept_id**: Unique identifier for the department (Primary Key).
+*   **dept_name**: Name of the department (e.g., HR, IT). Must be unique.
+*   **created_at**: Timestamp of creation.
 
-The system implements a normalized database design following Third Normal Form (3NF) principles to eliminate data redundancy and ensure data integrity.
+**2. Employees Table (`employees`)**
+Contains comprehensive records for each employee.
+*   **emp_id**: Unique identifier for the employee (Primary Key).
+*   **emp_name**: Full name of the employee.
+*   **email**: Professional email address (Unique).
+*   **phone**: Contact number.
+*   **gender**: Gender of the employee.
+*   **dob**: Date of birth.
+*   **dept_id**: Reference to the assigned department (Foreign Key).
+*   **hire_date**: Date of joining.
+*   **created_at / updated_at**: Audit timestamps.
 
-**Relationships:**
-- DEPARTMENTS (1) ↔ (N) EMPLOYEES: One-to-Many relationship
-- ADMINS: Independent entity for authentication
+**3. Admins Table (`admins`)**
+Manages security and access control.
+*   **admin_id**: Unique identifier for the administrator (Primary Key).
+*   **username**: Unique login username.
+*   **password**: Securely hashed password (Bcrypt).
+*   **last_login**: Timestamp of the last successful login.
 
-### 6.3 Table Structures
+### 6.3 Relationships
+*   **Departments to Employees**: A One-to-Many relationship exists where one department can have multiple employees. If a department is deleted, the associated employees' department field is set to NULL to preserve the employee record.
 
-#### Table 1: departments
-
-Stores organizational department information.
-
-| Column Name | Data Type | Constraints | Description |
-|------------|-----------|-------------|-------------|
-| dept_id | INT | PRIMARY KEY, AUTO_INCREMENT | Unique department identifier |
-| dept_name | VARCHAR(100) | NOT NULL, UNIQUE | Department name |
-| created_at | TIMESTAMP | DEFAULT CURRENT_TIMESTAMP | Record creation timestamp |
-
-**Indexes:**
-- Primary Key: dept_id
-- Unique Index: dept_name
-
-**Sample Data:**
-- HR (dept_id: 1)
-- IT (dept_id: 2)
-- Finance (dept_id: 3)
-
-#### Table 2: employees
-
-Stores comprehensive employee information.
-
-| Column Name | Data Type | Constraints | Description |
-|------------|-----------|-------------|-------------|
-| emp_id | INT | PRIMARY KEY, AUTO_INCREMENT | Unique employee identifier |
-| emp_name | VARCHAR(100) | NOT NULL | Employee full name |
-| email | VARCHAR(100) | NOT NULL, UNIQUE | Employee email address |
-| phone | VARCHAR(20) | NULL | Contact phone number |
-| gender | ENUM('M','F','Other') | DEFAULT 'M' | Employee gender |
-| dob | DATE | NULL | Date of birth |
-| dept_id | INT | FOREIGN KEY, NULL | Department reference |
-| hire_date | DATE | NULL | Employee joining date |
-| created_at | TIMESTAMP | DEFAULT CURRENT_TIMESTAMP | Record creation time |
-| updated_at | TIMESTAMP | ON UPDATE CURRENT_TIMESTAMP | Last modification time |
-
-**Indexes:**
-- Primary Key: emp_id
-- Unique Index: email
-- Foreign Key: dept_id REFERENCES departments(dept_id)
-- Index: idx_dept_id (for JOIN optimization)
-- Index: idx_email (for search optimization)
-
-**Foreign Key Constraints:**
-- ON DELETE SET NULL: If department deleted, employee's dept_id becomes NULL
-- ON UPDATE CASCADE: Department ID changes propagate automatically
-
-#### Table 3: admins
-
-Stores administrator authentication credentials.
-
-| Column Name | Data Type | Constraints | Description |
-|------------|-----------|-------------|-------------|
-| admin_id | INT | PRIMARY KEY, AUTO_INCREMENT | Unique admin identifier |
-| username | VARCHAR(50) | NOT NULL, UNIQUE | Admin login username |
-| password | VARCHAR(255) | NOT NULL | Bcrypt hashed password |
-| created_at | TIMESTAMP | DEFAULT CURRENT_TIMESTAMP | Account creation time |
-| last_login | TIMESTAMP | NULL | Last successful login |
-
-**Indexes:**
-- Primary Key: admin_id
-- Unique Index: username
-- Index: idx_username (for login query optimization)
-
-### 6.4 Database Relationships
-
-**Departments to Employees (1:N)**
-- One department can contain multiple employees
-- Each employee belongs to at most one department
-- Relationship is optional (employees can exist without department assignment)
-- Implements referential integrity with SET NULL on delete
-
-**Design Decisions:**
-1. **Nullable dept_id**: Allows flexibility during employee onboarding
-2. **SET NULL on DELETE**: Preserves employee records when departments are removed
-3. **Indexes on Foreign Keys**: Optimizes JOIN operations
-4. **ENUM for Gender**: Ensures data consistency
-5. **Automatic Timestamps**: Tracks data lineage
-
-### 6.5 Sample SQL Queries
-
-**Retrieve all employees with department names:**
-```sql
-SELECT e.emp_id, e.emp_name, e.email, e.phone, 
-       d.dept_name, e.hire_date
-FROM employees e
-LEFT JOIN departments d ON e.dept_id = d.dept_id
-ORDER BY e.emp_id DESC;
-```
-
-**Get employee count by department:**
-```sql
-SELECT d.dept_name, COUNT(e.emp_id) as employee_count
-FROM departments d
-LEFT JOIN employees e ON d.dept_id = e.dept_id
-GROUP BY d.dept_id, d.dept_name;
-```
+### 6.4 Sample SQL Queries
+*   **Retrieve Employees**: Joins the employees and departments tables to list all staff with their respective department names.
+*   **Department Statistics**: Groups employees by department ID to calculate the total workforce in each division.
 
 ---
 
@@ -659,50 +584,9 @@ The project will be considered successful when:
 
 ## 10. Conclusion
 
-The Employee Management System successfully addresses the critical need for efficient, secure, and centralized management of employee records in modern organizations. Through the implementation of contemporary web technologies and industry best practices, this project delivers a robust solution that streamlines HR operations and enhances data management capabilities.
+The Employee Management System successfully addresses the critical need for efficient, secure, and centralized management of employee records. By integrating React.js, Node.js, and MySQL, the project delivers a robust, scalable solution that streamlines HR operations and ensures data integrity.
 
-### Key Achievements
-
-The project successfully integrates React.js for a dynamic and responsive frontend, Node.js with Express.js for a scalable backend API, and MySQL for reliable data persistence. The implementation of JWT-based authentication ensures that sensitive employee information remains protected, while the intuitive user interface promotes ease of use and reduces the learning curve for administrators.
-
-The database design follows normalization principles, ensuring data integrity through proper constraints and relationships. Performance optimization through strategic indexing and efficient queries ensures the system remains responsive even as the employee database grows.
-
-### Technical Excellence
-
-The system demonstrates proficiency in full-stack web development, showcasing:
-- Component-based architecture with React
-- RESTful API design principles
-- Relational database modeling and optimization
-- Secure authentication and authorization
-- Responsive and modern UI/UX design
-
-### Practical Value
-
-From a practical standpoint, this system provides organizations with:
-- **Time Savings**: Automated processes replace manual data entry and retrieval
-- **Accuracy**: Validation mechanisms prevent errors and ensure data quality
-- **Security**: Enterprise-level security protects sensitive information
-- **Accessibility**: Web-based access from any device with a browser
-- **Scalability**: Architecture supports organizational growth
-
-### Educational Impact
-
-As an educational project, this system serves as an excellent demonstration of:
-- Database management concepts in a real-world scenario
-- Full-stack development workflow and integration
-- Security implementation in web applications
-- Project planning and execution methodologies
-- Industry-standard coding practices
-
-### Future Potential
-
-The modular architecture and clean codebase provide a solid foundation for future enhancements. The system can be extended to include additional features such as payroll integration, performance management, attendance tracking, and advanced analytics, transforming it into a comprehensive Human Resource Management System (HRMS).
-
-### Final Remarks
-
-This Employee Management System represents a successful synthesis of theoretical knowledge and practical implementation. It addresses real-world business needs while demonstrating technical competence in modern web development. The project showcases the potential of web-based applications to transform traditional business processes, making them more efficient, secure, and user-friendly.
-
-The comprehensive documentation, clean code structure, and scalable architecture ensure that this system can serve as both a functional tool for employee management and a learning resource for understanding enterprise application development. The project stands as a testament to the power of full-stack development in solving practical business challenges.
+This system demonstrates technical excellence through its component-based architecture, RESTful API design, and secure JWT authentication. It offers significant practical value by automating manual processes, enhancing data accuracy, and providing enterprise-level security. As a modular and scalable application, it stands as a solid foundation for future enhancements like payroll and performance management, effectively bridging the gap between theoretical concepts and real-world business solutions.
 
 ---
 

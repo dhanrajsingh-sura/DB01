@@ -21,6 +21,11 @@ const EmployeeManagement = () => {
     });
     const [isEditing, setIsEditing] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+
+    const toggleSidebar = () => {
+        setIsSidebarOpen(!isSidebarOpen);
+    };
 
     useEffect(() => {
         fetchEmployees();
@@ -138,8 +143,8 @@ const EmployeeManagement = () => {
 
     return (
         <div className="app-layout">
-            <Sidebar />
-            <div className="main-content">
+            <Sidebar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
+            <div className={`main-content ${!isSidebarOpen ? 'expanded' : ''}`}>
                 <div className="page-header">
                     <h1>Employee Management</h1>
                     <p>Add, edit, and manage employee records</p>

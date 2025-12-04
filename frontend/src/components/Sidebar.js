@@ -4,7 +4,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import './Sidebar.css';
 
-const Sidebar = () => {
+const Sidebar = ({ isOpen = true, toggleSidebar }) => {
     const location = useLocation();
     const navigate = useNavigate();
     const { admin, logout } = useAuth();
@@ -15,26 +15,39 @@ const Sidebar = () => {
     };
 
     return (
-        <div className="sidebar">
+        <div className={`sidebar ${!isOpen ? 'collapsed' : ''}`}>
             <div className="sidebar-header">
-                <h2>EMS</h2>
-                <p>Employee Management</p>
+                <div className="header-top">
+                    {isOpen && (
+                        <div className="brand">
+                            <h2>EMS</h2>
+                            <p>Employee Management</p>
+                        </div>
+                    )}
+                    {toggleSidebar && (
+                        <button className="toggle-btn" onClick={toggleSidebar} title={isOpen ? "Collapse" : "Expand"}>
+                            {isOpen ? '◀' : '☰'}
+                        </button>
+                    )}
+                </div>
             </div>
 
             <nav className="sidebar-nav">
                 <Link
                     to="/dashboard"
                     className={location.pathname === '/dashboard' ? 'nav-item active' : 'nav-item'}
+                    title="Dashboard"
                 >
                     <span className="nav-icon">📊</span>
-                    <span>Dashboard</span>
+                    {isOpen && <span>Dashboard</span>}
                 </Link>
                 <Link
                     to="/employees"
                     className={location.pathname === '/employees' ? 'nav-item active' : 'nav-item'}
+                    title="Employees"
                 >
                     <span className="nav-icon">👥</span>
-                    <span>Employees</span>
+                    {isOpen && <span>Employees</span>}
                 </Link>
             </nav>
 
@@ -43,13 +56,15 @@ const Sidebar = () => {
                     <div className="admin-avatar">
                         {admin?.username?.charAt(0).toUpperCase()}
                     </div>
-                    <div className="admin-details">
-                        <p className="admin-name">{admin?.username}</p>
-                        <p className="admin-role">Administrator</p>
-                    </div>
+                    {isOpen && (
+                        <div className="admin-details">
+                            <p className="admin-name">{admin?.username}</p>
+                            <p className="admin-role">Administrator</p>
+                        </div>
+                    )}
                 </div>
-                <button onClick={handleLogout} className="logout-button">
-                    Logout
+                <button onClick={handleLogout} className="logout-button" title="Logout">
+                    {isOpen ? 'Logout' : '🚪'}
                 </button>
             </div>
         </div>

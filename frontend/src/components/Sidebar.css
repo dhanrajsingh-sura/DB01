@@ -10,14 +10,32 @@
     left: 0;
     top: 0;
     box-shadow: 4px 0 20px rgba(0, 0, 0, 0.1);
+    transition: width 0.3s ease;
+    z-index: 100;
+    /* Ensure sidebar is on top */
+}
+
+.sidebar.collapsed {
+    width: 70px;
 }
 
 .sidebar-header {
-    padding: 30px 20px;
+    padding: 20px;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    height: 80px;
+    /* Fixed height for consistency */
+    display: flex;
+    align-items: center;
 }
 
-.sidebar-header h2 {
+.header-top {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.brand h2 {
     margin: 0;
     font-size: 1.8rem;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -27,10 +45,33 @@
     font-weight: 700;
 }
 
-.sidebar-header p {
+.brand p {
     margin: 5px 0 0 0;
     font-size: 0.85rem;
     color: #94a3b8;
+}
+
+.toggle-btn {
+    background: transparent;
+    border: none;
+    color: #94a3b8;
+    font-size: 1.2rem;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.toggle-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+}
+
+.sidebar.collapsed .toggle-btn {
+    width: 100%;
 }
 
 .sidebar-nav {
@@ -39,6 +80,7 @@
     display: flex;
     flex-direction: column;
     gap: 8px;
+    overflow-x: hidden;
 }
 
 .nav-item {
@@ -52,6 +94,13 @@
     position: relative;
     margin: 0 10px;
     border-radius: 10px;
+    white-space: nowrap;
+    /* Prevent text wrapping */
+}
+
+.sidebar.collapsed .nav-item {
+    justify-content: center;
+    padding: 14px 0;
 }
 
 .nav-item:hover {
@@ -67,6 +116,9 @@
 
 .nav-icon {
     font-size: 1.3rem;
+    min-width: 24px;
+    /* Ensure icon size is constant */
+    text-align: center;
 }
 
 .sidebar-footer {
@@ -79,11 +131,18 @@
     align-items: center;
     gap: 12px;
     margin-bottom: 15px;
+    overflow: hidden;
+}
+
+.sidebar.collapsed .admin-info {
+    justify-content: center;
 }
 
 .admin-avatar {
     width: 45px;
     height: 45px;
+    min-width: 45px;
+    /* Prevent shrinking */
     border-radius: 50%;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     display: flex;
@@ -95,6 +154,7 @@
 
 .admin-details {
     flex: 1;
+    white-space: nowrap;
 }
 
 .admin-name {
@@ -120,6 +180,8 @@
     cursor: pointer;
     font-weight: 600;
     transition: all 0.3s ease;
+    white-space: nowrap;
+    overflow: hidden;
 }
 
 .logout-button:hover {
@@ -133,11 +195,14 @@
         width: 70px;
     }
 
-    .sidebar-header p,
+    .brand,
     .nav-item span:not(.nav-icon),
-    .admin-details,
-    .logout-button {
+    .admin-details {
         display: none;
+    }
+
+    .logout-button {
+        padding: 12px 0;
     }
 
     .sidebar-header h2 {
@@ -146,5 +211,10 @@
 
     .nav-item {
         justify-content: center;
+    }
+
+    .toggle-btn {
+        display: none;
+        /* Hide toggle on mobile as it's always collapsed */
     }
 }

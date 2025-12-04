@@ -1,4 +1,25 @@
 /* frontend/src/components/EmployeeManagement.css */
+
+/* Layout styles to ensure correct positioning and overflow handling */
+.app-layout {
+    display: flex;
+    min-height: 100vh;
+    background: #f8fafc;
+}
+
+.main-content {
+    flex: 1;
+    margin-left: 280px;
+    padding: 30px;
+    transition: margin-left 0.3s ease;
+    /* Smooth transition when sidebar toggles */
+}
+
+.main-content.expanded {
+    margin-left: 70px;
+    /* Adjust margin when sidebar is collapsed */
+}
+
 .page-header {
     margin-bottom: 30px;
 }
@@ -234,6 +255,11 @@
 }
 
 @media (max-width: 768px) {
+    .main-content {
+        margin-left: 70px;
+        padding: 20px;
+    }
+
     .form-grid {
         grid-template-columns: 1fr;
     }
